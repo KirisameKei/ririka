@@ -77,9 +77,44 @@ async def on_ready():
 
 @client3.event
 async def on_message(message):
+    if message.content == ">bot_stop":
+        if message.guild is None:
+            await message.channel.send("このコマンドはけいの実験サーバでのみ使用可能です")
+            return
+        kei_ex_guild = client3.get_guild(585998962050203672)
+        if message.guild != kei_ex_guild:
+            await message.channel.send("このコマンドはけいの実験サーバでのみ使用可能です")
+            return
+        can_bot_stop_role = kei_ex_guild.get_role(707570554462273537)
+        if not can_bot_stop_role in message.author.roles:
+            await message.channel.send("何様のつもり？")
+            doM_role = message.guild.get_role(616212704818102275)
+            await message.author.add_roles(doM_role)
+            return
+
+        await client3.close()
+        now = datetime.datetime.now().strftime(r"%Y年%m月%d日　%H:%M")
+        stop_msg = f"{message.author.mention}により{client3.user.name}が停止させられました"
+        main_content = {
+            "username": "BOT STOP",
+            "avatar_url": "https://cdn.discordapp.com/attachments/644880761081561111/703088291066675261/warning.png",
+            "content": "<@523303776120209408>",
+            "embeds": [
+                {
+                    "title": "botが停止させられました",
+                    "description": stop_msg,
+                    "color": 0xff0000,
+                    "footer": {
+                        "text": now
+                    }
+                }
+            ]
+        }
+        requests.post(error_notice_webhook_url, json.dumps(main_content), headers={"Content-Type": "application/json"}) #エラーメッセをウェブフックに投稿
+        return
+
     if client3.user in message.mentions:
-        fileplace = discord.__file__.replace("\\", "\\\\").replace("_", "\_")
-        await message.channel.send(f"{where_from}\n{os.path.basename(__file__)}\n{discord.__version__}\n{fileplace}")
+        await message.channel.send(f"{where_from}\n{os.path.basename(__file__)}")
 
     try:
         if message.content.startswith("//") or (message.clean_content.startswith("/*") and message.clean_content.endswith("*/")):
