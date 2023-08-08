@@ -7,9 +7,11 @@ import discord
 import requests
 from discord.ext import tasks
 
+import contrast
 import othello
 import ox
 import syogi
+import uno
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 client3 = discord.Client(intents=discord.Intents.all())
@@ -23,6 +25,7 @@ about_othello = [] #[datetime.datetime, int, discord.Member, discord.Member]
 about_syogi = [] #[datetime.datetime, discord.Member, discord.Member]
 about_uno = [] #[datetime.datetime, discord.Message, bool, discord.Member × n]
 about_quoridor = [] #[datetime.datetime, discord.Member, discord.Member]
+about_contrast = [] #[datetime.datetime, discord.Member, discord.Member]
 about_puzzle15 = [] #[discord.Member]
 
 def unexpected_error(msg=None):
@@ -126,8 +129,8 @@ async def on_message(message):
         if message.content == ">help":
             await help(message)
 
-        if not message.channel.id == 691901316133290035: #ミニゲーム
-        #if not message.channel.id == 597978849476870153: #3組
+        #if not message.channel.id == 691901316133290035: #ミニゲーム
+        if not message.channel.id == 597978849476870153: #3組
             return
 
         if message.content.startswith(">ox"):
@@ -144,6 +147,9 @@ async def on_message(message):
 
         elif message.content == ">quoridor":
             await start_quoridor(message)
+
+        elif message.content == ">contrast":
+            await start_contrast(message)
 
         elif message.content == ">puzzle15":
             await start_puzzle15(message)
@@ -301,6 +307,27 @@ async def start_quoridor(message):
         return
 
 
+async def start_contrast(message):
+    global now_playing
+    if now_playing:
+        await message.channel.send("現在プレイ中です。しばらくお待ちください。")
+        return
+
+    if not is_you_entry_game(message):
+        await message.channel.send("あなたは既に募集しているかプレイ中のため募集・参加できません")
+        return
+    
+    if len(about_contrast) == 2: #先に募集している人がいたら
+        about_contrast.append(message.author)
+        await message.channel.send("勝負を開始します！")
+        await contrast.match_contrast(client3, message, about_contrast)
+
+    else: #募集をかける立場なら
+        about_contrast.append(datetime.datetime.now())
+        about_contrast.append(message.author)
+        await message.channel.send("他の参加者を待っています・・・\n他の参加者: `>contrast`で参加")
+
+
 async def start_puzzle15(message):
     await message.channel.send("このゲームは未完成です。実装をお待ちください。")
     return
@@ -353,6 +380,14 @@ async def cancel(message):
             return
 
         await message.channel.send("UNOへの参加キャンセルはリアクションで行ってください")
+
+    elif message.author in about_contrast:
+        if len(about_contrast) == 3:
+            await message.channel.send("勝負中は抜けられません")
+            return
+        
+        about_contrast.clear()
+        await message.channel.send("募集をキャンセルしました")
 
     elif message.author in about_puzzle15:
         await message.channel.send("1分間放置するとタイムアウトします")
