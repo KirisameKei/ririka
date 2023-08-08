@@ -11,7 +11,7 @@ import contrast
 import othello
 import ox
 import syogi
-import uno
+#import uno
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 client3 = discord.Client(intents=discord.Intents.all())
