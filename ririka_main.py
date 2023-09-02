@@ -169,6 +169,7 @@ def is_you_entry_game(message):
             message.author in about_syogi,
             message.author in about_uno,
             message.author in about_quoridor,
+            message.author in about_contrast,
             message.author in about_puzzle15
         )
     ):
@@ -451,6 +452,12 @@ async def loop():
         if about_quoridor[0] <= before_30min:
             member = about_quoridor[1]
             about_quoridor.clear()
+            await ch.send(f"{member.mention}\n30分間参加がなかったので募集は取り消されました")
+
+    if len(about_contrast) == 2:
+        if about_contrast[0] <= before_30min:
+            member = about_contrast[1]
+            about_contrast.clear()
             await ch.send(f"{member.mention}\n30分間参加がなかったので募集は取り消されました")
 
 
