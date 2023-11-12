@@ -148,7 +148,7 @@ async def match_contrast(client3, message, about_contrast):
                 else:
                     break
 
-            if timeout:
+            if timeout: #不要に見えている、おまじない
                 break
 
             if reply.author != teban_member:
