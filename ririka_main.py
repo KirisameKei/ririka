@@ -11,6 +11,7 @@ import contrast
 import othello
 import ox
 import syogi
+import quoridor
 #import uno
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
@@ -190,8 +191,8 @@ async def start_ox(message):
 
     if len(about_ox) == 3: #先に募集している人がいたら
         if message.content == ">ox":
-            about_ox.append(message.author)
             now_playing = True
+            about_ox.append(message.author)
             await message.channel.send("勝負を開始します！")
             await ox.match_ox(client3, message, about_ox)
             now_playing = False
@@ -230,6 +231,7 @@ async def start_othello(message):
 
     if len(about_othello) == 3: #先に募集している人がいたら
         if message.content == ">othello":
+            now_playing = True
             about_othello.append(message.author)
             await message.channel.send("勝負を開始します！")
             await othello.match_othello(client3, message, about_othello)
@@ -272,9 +274,11 @@ async def start_syogi(message):
         return
 
     if len(about_syogi) == 2: #先に募集している人がいたら
+        now_playing = True
         about_syogi.append(message.author)
         await message.channel.send("勝負を開始します！")
         await syogi.match_syogi(client3, message, about_syogi)
+        now_playing = False
 
     else: #募集をかける立場なら
         about_syogi.append(datetime.datetime.now())
@@ -296,8 +300,6 @@ async def start_uno(message):
 
 
 async def start_quoridor(message):
-    await message.channel.send("このゲームは未完成です。実装をお待ちください。")
-    return
     global now_playing
     if now_playing:
         await message.channel.send("現在プレイ中です。しばらくお待ちください。")
@@ -306,6 +308,18 @@ async def start_quoridor(message):
     if not is_you_entry_game(message):
         await message.channel.send("あなたは既に募集しているかプレイ中のため募集・参加できません")
         return
+    
+    if len(about_quoridor) == 2: #先に募集している人がいたら
+        now_playing = True
+        about_quoridor.append(message.author)
+        await message.channel.send("勝負を開始します！")
+        await quoridor.match_quoridor(client3, message, about_quoridor)
+        now_playing = False
+
+    else: #募集をかける立場なら
+        about_quoridor.append(datetime.datetime.now())
+        about_quoridor.append(message.author)
+        await message.channel.send("他の参加者を待っています・・・\n他の参加者: `>quoridor`で参加")
 
 
 async def start_contrast(message):
@@ -319,9 +333,11 @@ async def start_contrast(message):
         return
     
     if len(about_contrast) == 2: #先に募集している人がいたら
+        now_playing = True
         about_contrast.append(message.author)
         await message.channel.send("勝負を開始します！")
         await contrast.match_contrast(client3, message, about_contrast)
+        now_playing = False
 
     else: #募集をかける立場なら
         about_contrast.append(datetime.datetime.now())
@@ -409,9 +425,10 @@ async def help(message):
         ">ox       : 募集されている○×ゲームに参加します\n"
         ">othello n: n×nのオセロを募集します(n=4, 6, 8)\n"
         ">othello  : 募集されているオセロに参加します\n"
-        ">syogi    : 将棋を募集&参加します\n"
+        ">syogi    : 将棋を募集・参加します\n"
         ">uno      : UNOを募集します\n"
-        ">quoridor : コリドールを募集します\n"
+        ">quoridor : コリドールを募集・参加します\n"
+        ">contrast : コントラストを募集・参加します\n"
         ">puzzle15 : 15パズルを開始します(1人用)```"
     )
     help_embed.add_field(name="コマンド一覧", value=description, inline=False)
