@@ -8,6 +8,7 @@ import requests
 from discord.ext import tasks
 
 import contrast
+import mattix
 import othello
 import ox
 import syogi
@@ -27,6 +28,7 @@ about_syogi = [] #[datetime.datetime, discord.Member, discord.Member]
 about_uno = [] #[datetime.datetime, discord.Message, bool, discord.Member × n]
 about_quoridor = [] #[datetime.datetime, discord.Member, discord.Member]
 about_contrast = [] #[datetime.datetime, discord.Member, discord.Member]
+about_mattix = [] #[datetime.datetime, str, discord.Member, discord.Member]
 about_puzzle15 = [] #[discord.Member]
 
 def unexpected_error(msg=None):
@@ -152,6 +154,9 @@ async def on_message(message):
         elif message.content == ">contrast":
             await start_contrast(message)
 
+        elif message.content.startswith(">mattix"):
+            await start_mattix(message)
+
         elif message.content == ">puzzle15":
             await start_puzzle15(message)
 
@@ -171,6 +176,7 @@ def is_you_entry_game(message):
             message.author in about_uno,
             message.author in about_quoridor,
             message.author in about_contrast,
+            message.author in about_mattix,
             message.author in about_puzzle15
         )
     ):
@@ -345,6 +351,40 @@ async def start_contrast(message):
         await message.channel.send("他の参加者を待っています・・・\n他の参加者: `>contrast`で参加")
 
 
+async def start_mattix(message):
+    global now_playing
+    if now_playing:
+        await message.channel.send("現在プレイ中です。しばらくお待ちください。")
+        return
+
+    if not is_you_entry_game(message):
+        await message.channel.send("あなたは既に募集しているかプレイ中のため募集・参加できません")
+        return
+    
+    if len(about_mattix) == 3: #先に募集している人がいたら
+        now_playing = True
+        about_mattix.append(message.author)
+        await message.channel.send("勝負を開始します！")
+        await mattix.match_mattix(client3, message, about_mattix)
+        now_playing = False
+
+    else:
+        try:
+            mode = message.content.split()[1]
+        except IndexError:
+            await message.channel.send("type `>mattix` basic or `>mattix` advance")
+            return
+        
+        if mode.lower() not in ("basic", "advance"):
+            await message.channel.send("type `>mattix` basic or `>mattix` advance")
+            return
+
+        about_mattix.append(datetime.datetime.now())
+        about_mattix.append(mode)
+        about_mattix.append(message.author)
+        await message.channel.send("他の参加者を待っています・・・\n他の参加者: `>mattix`で参加")
+
+
 async def start_puzzle15(message):
     await message.channel.send("このゲームは未完成です。実装をお待ちください。")
     return
@@ -404,6 +444,14 @@ async def cancel(message):
             return
         
         about_contrast.clear()
+        await message.channel.send("募集をキャンセルしました")
+
+    elif message.author in about_mattix:
+        if len(about_mattix) == 3:
+            await message.channel.send("勝負中は抜けられません")
+            return
+        
+        about_mattix.clear()
         await message.channel.send("募集をキャンセルしました")
 
     elif message.author in about_puzzle15:
