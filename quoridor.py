@@ -395,8 +395,8 @@ async def match_quoridor(client3, message, about_quoridor):
         if operate == "move":
             match[(move_y-1)*2][(move_x-1)*2] = index + 1
             if (move_y - 1) * 2 == index * 16: #相手の最下段に到達したら
-                create_pic_quoridor(match, index, player_list)
-                f = discord.File(".game_pic/quoridor.png")
+                create_pic_quoridor(match, index, sente.display_name, gote.display_name)                
+                f = discord.File("./game_pic/quoridor.png")
                 await message.channel.send(content=f"{player_list[index].name}の勝ち！", file=f)
                 break
 
