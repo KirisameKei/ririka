@@ -30,7 +30,7 @@ def create_pic_syogi(match, index):
     for i in range(7):
         koma = Image.open(f"./syogi/{7-i}.png")
         ban.paste(koma, (670, i*80+130), koma.split()[3])
-        moji.text((720, i*80+150), text=f"×{len(match[9][6-i])}", font=font, fill=0x000000)
+        moji.text((720, i*80+150), text=f"×{match[9][6-i]}", font=font, fill=0x000000)
 
     #後手の持ち駒を描画
     for i in range(7):
@@ -39,7 +39,7 @@ def create_pic_syogi(match, index):
         koma = Image.open(f"./syogi/{i+1}.png")
         koma = koma.rotate(180)
         ban.paste(koma, (60, i*80+40), koma.split()[3])
-        moji.text((0, 0), text=f"×{len(match[10][i])}", font=font, fill=0x000000)
+        moji.text((0, 0), text=f"×{match[10][i]}", font=font, fill=0x000000)
         ban.paste(temp.rotate(180), (0, i*80+58))
 
     font = ImageFont.truetype("./UDDigiKyokashoN-R.ttc", size=20)
