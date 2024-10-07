@@ -160,7 +160,7 @@ async def match_syogi(client3, message, about_syogi):
                 else:
                     if str(reaction.emoji) == "👍": #投了するなら
                         next_index = (n+1)%2
-                        await message.channel.send(f"タイムアウト！{player_list[next_index]}の勝ち！")
+                        await message.channel.send(f"投了！{player_list[next_index]}の勝ち！")
                         timeout = True #タイムアウトではない
                         break
 
@@ -616,7 +616,7 @@ async def match_syogi(client3, message, about_syogi):
             break
 
         if x_before == -1: #駒打ちなら
-            match[index+9][place] =- 1 #持ち駒を1減らす
+            match[index+9][place] -= 1 #持ち駒を1減らす
             if index == 0: #先手なら
                 match[y_after][x_after] = place + 1
             else: #後手なら
