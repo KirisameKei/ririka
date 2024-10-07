@@ -200,8 +200,8 @@ async def match_syogi(client3, message, about_syogi):
                     continue
 
             if not x_before == -1: #駒打ちでない(=盤上の駒を動かす)なら
-                if (
-                    any(
+                if any(
+                    (
                         x_before <= -1, x_before >= 9,
                         y_before <= -1, y_before >= 9,
                         x_after <= -1, x_after >= 9,
